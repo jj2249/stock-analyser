@@ -77,36 +77,35 @@ def retrieve_stock_data(stock_key, start_d=None, end_d=None, sampling_rate=None,
 
     # data is in tuple pairs stored in numpy array so separate
     #t = np.array([item[0] for item in data])
-    #s = np.array([item[1] for item in data])
+    s = np.array([item[4] for item in data])
 
-    return data
-
-
-def api_call(csv_data):
-    stock_names = read_csv(csv_data, specifyCols=['Ticker', 'Start Date', 'End Date'])
-    stock_tuples = list(stock_names.itertuples(index=False, name=None))
-    valid_count = 0
-    for stock in stock_tuples:
-        try:
-            temp = retrieve_stock_data(prepend_database_stock(stock[0], 'WIKI'), stock[1], stock[2])
-            valid_count += 1
-        except NotFoundError:
-            pass
-
-    print(valid_count)
+    return s
 
 
+def api_call(csv_data, final_csv):
+	full_data = pd.DataFrame()
+	stock_names = read_csv(csv_data, specifyCols=['Ticker', 'Start Date', 'End Date'])
+	stock_tuples = list(stock_names.itertuples(index=False, name=None))
+	valid_count = 0
 
-file = "./fund_data.csv"
+	for stock in stock_tuples:
+		try:
+			temp = retrieve_stock_data(prepend_database_stock(stock[0], 'WIKI'), stock[1], stock[2], sampling_rate='weekly')
+			temp_df = pd.DataFrame({stock[0] : temp})
 
-api_call(file)
+			full_data = pd.concat([full_data, temp_df], axis=1, sort=False)
+			valid_count += 1
 
+		except NotFoundError:
+			pass
 
+	full_data.to_csv(final_csv)
 
 
 
+infile = "./fund_data.csv"
+outfile = "./full_collected_data.csv"
 
-
-
+api_call(infile, outfile)
 
 

@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pandas as pd
 import quandl
+from quandl.errors.quandl_error import NotFoundError 
 import re
 import sys
 
@@ -21,8 +22,8 @@ def save_as_csv(infile, outfile):
 """
 
 
-def read_csv(file_path):
-    data  = pd.read_csv(file_path, usecols=[0, 1, 2])
+def read_csv(file_path, specifyCols=None):
+    data  = pd.read_csv(file_path, usecols=specifyCols)
     return data
 
 
@@ -82,13 +83,30 @@ def retrieve_stock_data(stock_key, start_d=None, end_d=None, sampling_rate=None,
 
 
 def api_call(csv_data):
-    stock_names = read_csv(csv_data)
+    stock_names = read_csv(csv_data, specifyCols=['Ticker', 'Start Date', 'End Date'])
     stock_tuples = list(stock_names.itertuples(index=False, name=None))
+    valid_count = 0
     for stock in stock_tuples:
-        print(retrieve_stock_data(prepend_database_stock(stock[0], "WIKI"), stock[1], stock[2], sampling_rate='daily'))
+        try:
+            temp = retrieve_stock_data(prepend_database_stock(stock[0], 'WIKI'), stock[1], stock[2])
+            valid_count += 1
+        except NotFoundError:
+            pass
+
+    print(valid_count)
+
 
 
 file = "./fund_data.csv"
 
-print(retrieve_stock_data("WIKI/AAPL", "2016-01-01", "2016-01-08"))
+api_call(file)
+
+
+
+
+
+
+
+
+
 

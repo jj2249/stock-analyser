@@ -1,0 +1,19 @@
+- Read a csv file with columns 'ticker', 'start date' and 'end date' into a Pandas dataframe.
+- Iterate over data frame to create a 1D numpy array of 3-tuples. i.e [('ticker0', 'start date0', 'end date0'), ('ticker1', 'start date1', ...)...]
+
+- Iterate over the numpy array and for each iteration:
+
+	- Make a call to the WIKI Prices database for that specific ticker.
+
+	- If data exists in the WIKIP database:
+		- The data is collected as weekly time series data starting at 'start date' and ending at 'end date'.
+		- Extract the closing prices from the returned data.
+		- Create a single column of a dataframe using the ticker as the header.
+		- Join this column to a global data frame defined before iterating.
+		- Increment a counter that keeps track of how many valid calls were made.
+
+	- If no data exists for the ticker:
+		- Do nothing
+
+- Once an api call has been made for each stock, write the global dataframe to a csv file in the same directory.
+- Return the number of valid calls that have been made.

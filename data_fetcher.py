@@ -89,8 +89,8 @@ def api_call(csv_data, final_csv):
 
 	for stock in stock_tuples:
 		try:
-			temp = retrieve_stock_data(prepend_database_stock(stock[0], 'WIKI'), stock[1], stock[2], sampling_rate='weekly')
-			temp_df = pd.DataFrame({stock[0] : temp})
+			temp = retrieve_stock_data(prepend_database_stock(str(stock[0]), 'WIKI'), stock[1], stock[2], sampling_rate='monthly')
+			temp_df = pd.DataFrame({str(stock[0]) : temp})
 
 			full_data = pd.concat([full_data, temp_df], axis=1, sort=False)
 			valid_count += 1
@@ -102,8 +102,8 @@ def api_call(csv_data, final_csv):
 
 
 
-infile = "./fund_data.csv"
-outfile = "./full_collected_data.csv"
+infile = "./stock_prices.csv"
+outfile = "./full_collected_data2.csv"
 
 api_call(infile, outfile)
 
